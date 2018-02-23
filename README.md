@@ -8,8 +8,10 @@ Currently only 4 chapters, covering the basics of data structures and function w
 
 ## To be done: 
 
-* plots, 
+* plots,
 * environments, 
 * more on functions, 
-* basic statistical tools, 
+* OOP -- S3 & S4 objects and classes,
+* mathematics
+* basic statistical tools,
 * statistical model building.
