@@ -24,7 +24,7 @@ ls.str()    ## lists all elements in the environment together with their propert
 ## what is the default directory for writing results and reading data
 getwd()     ## get working directory
 ## it's better to choose and set it manually to your choice
-setwd("D:/ROBOCZY/R/TutorialAK/01 Basics/")    ## set working directory
+setwd("D:/ROBOCZY/R/TutorialAK/01 Intro/")    ## set working directory
       ## this folder must already exist!
       ## you could use
       dir.create()
@@ -34,37 +34,37 @@ setwd("D:/ROBOCZY/R/TutorialAK/01 Basics/")    ## set working directory
 save("f",file="f")
 
 list.files()  ## check it also in system browser
-## we have created file without extension - not a good idea... It will work but no one knows what's the file about.
+## We have created file without extension - not a good idea... It will work but no one knows what's the file about.
 ## removing the file
 unlink("f")         ## remember that it works on working directory
 list.files()
 
 ## create it again
 save("f",file="f.RData")  ## .RData is usual extension for saving R objects (as binaries not as text)
-                          ## BUT it is not default. It is up to the user to give and choose extension.
+                          ## BUT it is not default. It is up to the user to choose and give extension.
 list.files()
 save("a",file="a.RData")
 list.files()
 
 ## clearing environment
 rm(list=ls())  ## dangerous!!!  but sometimes you need to do it
-ls()           ## nothing
+ls()           ## environment is empty now
 
 ## BUT you have stored objects into the files hence you may restore them
-load("a.R")
+load("a.RData")
 ls()
 a
-load("f.R")
+load("f.RData")
 ls()
 f
 f(a)
 
 ## you may save all the needed objects to one file
-save(list=c("a","f"),file="af.R")
+save(list=c("a","f"),file="af.RData")
 rm(list=ls())
 ls()
 ## restoring
-load("af.R")
+load("af.RData")
 ls()
 f(a)
 
@@ -85,14 +85,36 @@ ls()
 f(a)
 f(s)
 
-save.image(file="envir.R")
+## it's always better to give the file some name (not to rely on the default names)
+save.image(file="envir.RData")
+list.files()   ## envir.RData is not hidden now (doesn't begin with period ".")
 rm(list=ls())
 ls()
 
-load(file="envir.R")
+load(file="envir.RData")
 ls()
 f(a)
 f(s)
+
+###########################################################—•°
+## Notice that file extension is set up by user.
+## The convension is that
+## * .R is for script files, i.e. they are text files — you may edit this files;
+## * .RData is for binary files for storing R objects — you cannot edit such files.
+## However you may do
+save.image(file="envir.R")
+## or even
+save.image(file="envir.txt")
+## or
+save.image(file="envir.jpg")
+## ... and so on.
+list.files()
+## You may even load data from such files:
+load(file="envir.jpg")
+
+## But if you try to open it from your system file browser... Ooops!
+## So do not breach convensions!
+
 
 ###########################################################—•°
 ## Now you are ready to work!
@@ -108,7 +130,7 @@ f(s)
 help(ls)
 ?ls
 
-## try it with tne commands above
+## try it with the commands above
 
 ## if you don't remember exactly, try
 #  ??command
