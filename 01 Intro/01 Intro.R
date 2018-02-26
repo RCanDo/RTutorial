@@ -99,8 +99,8 @@ f(s)
 ###########################################################—•°
 ## Notice that file extension is set up by user.
 ## The convension is that
-## * .R is for script files, i.e. they are text files — you may edit this files;
-## * .RData is for binary files for storing R objects — you cannot edit such files.
+## • .R is for script files, i.e. they are text files — you may edit this files;
+## • .RData is for binary files for storing R objects — you cannot edit such files.
 ## However you may do
 save.image(file="envir.R")
 ## or even

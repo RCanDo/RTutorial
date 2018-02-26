@@ -25,11 +25,13 @@ a
 is.atomic(a)
 is.list(a)
 
-typeof(a)
+typeof(a)         ## type of element of an atomic vector, i.e. one of:
+                  ##  character, integer, double, logical, complex — these are the most important;
+                  ## there are many more types but not so important at this stage
 
 a <- c(1,2,"b")
-a                 ## all elements must be of the same type thus they were coerced to the one type
-                  ## (the more flexible, in this case character, as numbers may be safely coerced to character
+a                 ## all elements of atomic vector must be of the same type thus they were coerced to the one type
+                  ## (the more flexible, in this case "character", as numbers may be safely coerced to character
                   ##  while letters cannot be transformed into digits)
 is.atomic(a)
 is.list(a)
@@ -44,13 +46,15 @@ is.atomic(l)
 is.list(l)
 
 typeof(l)  ## list !!!
+           ## Notice that elements of a list may be of different types so typeof() cannot return one specific type.
+           ## Instead it returns a "list", what is also considered one of the possible type.
 
 ## There is also
 is.vector(a)
 is.vector(l)
 ## but its meaning is that an object is a vector not having any attributes except 'names'.
 ## Not very useful; in fact not useful at all :)
-## Attributes are some properties of any R object, names are one of many standard attributes while user may define
+## Attributes are some properties of any R object, 'names' are one of many standard attributes while user may define
 ## any attribute they wish to.
 ## We'll learn about attributes and names later.
 
@@ -78,7 +82,7 @@ a<-"b"
 a
 a<-TRUE
 a
-a<-NA    ## NA (Not Availabe i.e. unknown value as NULL in SQL)
+a<-NA    ## NA (Not Availabe i.e. unknown value like NULL in SQL)
 typeof(a)
 a<-NULL  ##! this is not the same as NULL in SQL!!!
          ## This is rather empty space (null, void, nothing) in memory then unknown value.
@@ -130,18 +134,18 @@ table(dd,ll,pp)
 ftable(dd,ll,pp)   ## flat table
 
 (dat0 <- cbind(dd,ll,pp))  ## ugly...
-table(dat0)             ## ...and data not recognised as separate vectors...
+table(dat0)                ## ...and data not recognised as separate vectors...
 
-   typeof(dat0)
+   typeof(dat0)            ## it's type of element of an atomic vector
    is.atomic(dat0)
    is.list(dat0)
 
 (dat <- data.frame(dd,ll,pp))
-(tt <- table(dat))                      ## BEAUTY !!!
+(tt <- table(dat))             ## BEAUTY !!!
 (ft <- ftable(dat))
 
 ## data.frame  is the most important data object in R !!!
-## It is not a vector and not a matrix. It is list of vectors all having the same length.
+## It is neither a vector nor a matrix. It is list of vectors all having the same length.
 
    typeof(dat)    ##!!! list !!!
    is.atomic(dat)
@@ -207,6 +211,7 @@ is.logical(a)     ## logical vectors described below
 is.data.frame(a)
 is.table(a)
 is.array(a)
+is.matrix(a)
 
 is.vector(a)   ##!!! it means something different then you might think; more on this later on;
 is.atomic(a)
@@ -260,13 +265,13 @@ str(a1)
 attributes(a1)
 
 ## The class of an object influences the bahaviour of the functions operating on them.
+## E.g.
 
 summary(dat0)
 summary(dat)
 summary(tt)
 summary(m1)
 summary(a1)
-
 
 #######################################—•°
 ## unclass() - removing class of an object
@@ -299,16 +304,16 @@ attr(tt,"dim")
 length(m1)  ## it is simply number of elements of m1
 ...
 
-## array and table may have many dimensions while matrix only 2
+## array and table can have many dimensions while matrix only 2
 mt <- m1
 dim(mt)
 class(mt)
 ## we may change dimensions by changing value of a "dim" attribute
 dim(mt) <- c(2,2,3)
 mt
-class(mt)    ##! it's no longer a "matrix" - mattrix may have only 2 dimensions
+class(mt)    ##! it's no longer a "matrix" - matrix can only have 2 dimensions
 
-## Thus array is the most general class while matrix is its special subclass (only 2 dimensions).
+## Thus array is the more general class while matrix is its special subclass (only 2 dimensions).
 ## The purpose of having this special class is that on the set of matrices
 ## there are defined some mathematical operations like multiplication or addition
 m1
@@ -340,7 +345,7 @@ class(mxy.r)
 ss <- c("a","b","c","d")
 (mxy.c2 <- cbind(mxy.c,ss))
 class(mxy.c2) ; typeof(mxy.c2)
-## all elements of matrix must of the same type...
+## all elements of matrix must be of the same type...
 
 ##
 ## So, how to collect data of different types?
@@ -385,7 +390,7 @@ d
 seq_along(d)
 1:length(d)
 
-seq_len(10)      ## it's faster then 1:10 (but dont't bother - you'll never see the difference)
+seq_len(10)      ## it's faster then 1:10 (but dont't bother — you'll probably never see the difference)
 
 rep(1:3,2)
 rep(1:3,each=2)
@@ -397,7 +402,7 @@ rep(1:3,length=13)
 ## you may give each element a distinct number of replications
 rep(1:3,times=c(3,2,4))    ## 1 is replicated 3 times, 2 — 2 times and 3 — 4 times
 rep(1:3,c(3,2,4))          ## the same
-rep(1:3,times=c(3,2,4),length=13)  ## only length works :(
+rep(1:3,times=c(3,2,4),length=13)  ## only length works :(  i.e. 'length' option prevails over 'times'.
 
 rep(letters[1:3],each=2,length=8)
 
@@ -419,7 +424,7 @@ seq(0,1,.1666667)   ## Where's the 1.0???
 
    #######################################—•°
    ## RULE OF RECYCLING !!!
-   ## It is extremaly important to remember it!
+   ## It is extremaly important !!!
    #######################################—•°
 
    1:3 + 1
@@ -432,7 +437,7 @@ seq(0,1,.1666667)   ## Where's the 1.0???
 
    ## matrices
    v <- 1:14
-   (m3 <- matrix(v,nrow=4))  ## nrow is not a divisor of length(v) thus v was recycled to get the "proper" lenght
+   (m3 <- matrix(v,nrow=4))  ## nrow is not a divisor of length(v) thus v was recycled to get the "proper" length
    ##!!! This is convienient BUT may couse problems while searching for bug in a program!
 
    m1 + 1     ## 1 recycled to the length(m1)
@@ -651,7 +656,7 @@ save.image()
 ###################################################################################################—•°
 sample(0:1,100,replace=TRUE)
 replicate(10,sample(0:1,100,replace=TRUE))   ## sampling repeated 10 times, result returned to matrix
-                                             ## - each column is one replication (experiment)
+                                             ## — each column is one replication (experiment)
 
 ## this is more interesting
 replicate(10,mean(sample(0:1,10,replace=TRUE)))
@@ -687,7 +692,7 @@ plot(result,xlab="power of 10 for sample size",ylab="standard deviation of the s
 ## Conclusion: the bigger sample the less variation of the (sample) mean.
 ## This is called
 ##    The Law Of Large Numbers (LLN)
-## the basic theorem of the Statistics.
+## the basic theorem of Statistics.
 ## The more data we have, the more reliable are conclusions drawn from them and so is our knowledge.
 #######################################—•°
 
@@ -708,19 +713,23 @@ result
    ####################################—•°
    ## plot() by default shows only points
    ## type = 'p' — points (default option)
-   plot(result,type='p' ,xlab="power of 10 for sample size",ylab="standard deviation of the sample mean")
+   plot(result,type='p', xlab="power of 10 for sample size",ylab="standard deviation of the sample mean")
 
    ## type = 'l' — lines
-   plot(result,type='l' ,xlab="power of 10 for sample size",ylab="standard deviation of the sample mean")
+   plot(result,type='l', xlab="power of 10 for sample size",ylab="standard deviation of the sample mean")
 
    ## type = 'b' — both
-   plot(result,type='b' ,xlab="power of 10 for sample size",ylab="standard deviation of the sample mean")
+   plot(result,type='b', xlab="power of 10 for sample size",ylab="standard deviation of the sample mean")
    ####################################—•°
 
 #######################################—•°
 ## But the best (most flexible) solution is to encode the experiment into the function.
-## This what we mean by "programming"!
-experiment <- function(nrpl,K,base=10,set=0:1){ ## base  and  set  are given default values
+## This is what we mean by "programming"!
+
+experiment <-  function(nrpl,K,base=10,set=0:1){## beginning of a functions body
+   ## everything between {} is called "function's body"
+   ## this is a set of commands which will be executed every time the function is called
+
    (result <- numeric(0))
    for(k in 1:K){
       result[k]<-sd(replicate(nrp,mean(sample(set,base^k,replace=TRUE))))
@@ -728,8 +737,11 @@ experiment <- function(nrpl,K,base=10,set=0:1){ ## base  and  set  are given def
    plot(result,type='b', xlab=paste0("power of ",base," for sample size")
                        , ylab="standard deviation of the sample mean")
    title(paste0("sd for the sample mean from the set {",paste(set,collapse=", "),"}"))  ##!!!
-   result   ##!!! functions return the last line of code (if there is no return(result) earlier)  !!!
-}
+   result   ##!!! in R functions return the last line of the body  (if there is no return(result) earlier)  !!!
+
+}## end of a function body
+
+## Notice that in the example above parameters 'base'  and  'set'  are given default values.
 
 experiment(10,4)
 experiment(10,6)
@@ -749,6 +761,7 @@ experiment(10,6,5,-1:1)  ## changing the set from which we sample
 
 
 ## There are countless ways for generalising this experiment.
+## In fact it's a starting point to study Probability and Statistics in general.
 ## Try yourself!!!
 
 
