@@ -15,7 +15,7 @@ TinnR is somewhat old-fashioned in appearance but very customizable and simple t
 
 Whatever environment you choose, work with this tutorial interactively: send commands line by line to the console. 
 The R language is designed as interactive tool for data manipulation and statistical analysis and model building. 
-Remember about this! 
+Remember this! 
 
 ## Content
 Currently only 4 chapters, covering the basics of data structures and function writing.
