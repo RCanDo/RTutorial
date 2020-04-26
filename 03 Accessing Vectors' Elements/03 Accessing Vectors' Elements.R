@@ -56,7 +56,7 @@ nn[NA]       ## in this context NA is treated as logical and is replicated to th
              ## nonetheless, NA gives NA.
 
 #######################################—•°
-## random element
+## random element from the vector
 nn[sample(seq_along(nn),1)] ## what is the same as:
    sample(nn,1)
 ## random elements
@@ -160,14 +160,19 @@ mm[idx]
 
 ## how to get diagonal elements
 (mindim <- min(dim(mm)))
-(idx <- matrix(rep(1:mindim,each=2),ncol=2,byrow=TRUE))
+(idx <- matrix(rep(1:mindim, 2), ncol=2))
+mm[idx] 
+# or 
+(idx <- matrix(rep(1:mindim, each=2), ncol=2, byrow=TRUE))
 mm[idx]
 
    ## there is command for diagonal
    diag(mm)       ## diagonal of the matrix
    ## BUT
-   diag(6)        ## unit matrix of size 6
+   diag(6)        #! unit matrix of size 6
+   diag(c(6))     #!
    diag(as.matrix(6))
+   #
    diag(1:6)      ## diagonal matrix constructed from the given vector
    diag(c(3,2,5))
 
@@ -205,6 +210,9 @@ dim(mm[1:3,3])  ##!!!
    dim(xx) <- c(4,1,1)
    xx
 
+   dim(xx) <- c(1,4,1)
+   xx
+   
    dim(xx) <- c(1,1,4)
    xx
 
@@ -371,11 +379,14 @@ typeof(df)
 str(df)
 
 dim(df)  ## data frame is a list but have dimensions
+attributes(df)
 
 (undf <- unclass(df))
 class(undf)
 length(undf)
 str(undf)
+dim(undf)
+attributes(undf)
 
 df[1]         ## the first element of the list, what in case of data.frame is the first column
 class(df[1])  ##!!! sublist of a list is still a list, thus sub-data.frame of a data.frame is a data.frame !!!
@@ -411,7 +422,7 @@ df[1:3,c(2,4)]
 ...
 
 ## random sample from the set of records
-df[sample(ncol(df),4),]
+df[sample(nrow(df),4),]
 
 #######################################—•°
 save.image()
@@ -830,11 +841,12 @@ l1
 
 (df <- data.frame( sample(letters[1:3],7,replace=TRUE), sample(7)+10, sample(c(T,F),7,replace=TRUE), runif(7) ))
 
-names(df)
 colnames(df)
    names(df)  ## the same
 rownames(df)
 attributes(df)
+row.names(df)
+
 
 ## In case of data frames rownames and colnames always exist — they are given automaticaly.
 ## For rows these are number of each row (but all names are charachters so these numbers are also characters,
@@ -845,7 +857,7 @@ as.integer(rownames(df))   ## now they are numbers
 ## colnames are taken from names of vectors of wich they are created, or if they were creaed via some formula
 ## (e.g. sample(x)) then the call to this formula is used as a name (while all "(" and ")"  are transformed to ".").
 ##
-## In case if data frames  colnames  and  names  are synonyms.
+## In case of data frames  `colnames`  and  `names`  are synonyms.
 ##
 ## Notice that colnames() are written to the "names" attribute, while rownames() to the "row.names" attribute.
 attr(df,"names")
@@ -869,8 +881,8 @@ df3
 ## You may not use "" around standard names
 df3 <- data.frame( vec1 = v1 , vec2 = v2 , vec3 = v3 , "last column" = sample(c(T,F),7,replace=T))
 df3
-## We had to use "" around the last name (it contains a space) but the space was changed to . Pity...
-## (col)names of data frames are NORMALISED — all special characters are replaced by .
+## We had to use "" around the last name (it contains a space) but the space was changed to `.`. Pity...
+## (col)names of data frames are NORMALISED — all special characters are replaced by `.`.
 
 
 ## changing (col)names manually
@@ -882,7 +894,7 @@ rownames(df3) <- paste0("row_",rownames(df3))
 df3
 
 #######################################—•°
-## When working with big data frames then it is generally much safer
+## When working with big data frames it is generally much safer
 ## to operate on (col)names rather then on integer positions of columns.
 ## Position may change, but really important is the fact that using names is more informative
 ## — it is easier to write and read code using names (if you are only consistent with using them).

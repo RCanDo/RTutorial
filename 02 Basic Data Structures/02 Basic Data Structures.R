@@ -54,10 +54,11 @@ is.vector(a)
 is.vector(l)
 ## but its meaning is that an object is a vector not having any attributes except 'names'.
 ## Not very useful; in fact not useful at all :)
+attributes(a)
+attributes(l)
 ## Attributes are some properties of any R object, 'names' are one of many standard attributes while user may define
 ## any attribute they wish to.
 ## We'll learn about attributes and names later.
-
 
 ###################################################################################################—•°
 ## 2. Vectors (atomic)
@@ -82,12 +83,15 @@ a<-"b"
 a
 a<-TRUE
 a
+is.vector(a)  # TRUE
+
 a<-NA    ## NA (Not Availabe i.e. unknown value like NULL in SQL)
 typeof(a)
 a<-NULL  ##! this is not the same as NULL in SQL!!!
          ## This is rather empty space (null, void, nothing) in memory then unknown value.
 a
 typeof(a)
+is.vector(a)  # FALSE
 
 ## c() - creating longer vectors
 c(1,3,5)   ## just printed on the screen - you cannot do anything more with it
@@ -110,6 +114,7 @@ a      ## :(
 (a <- 1:5)
 is.atomic(a)
 is.list(a)
+attributes(a)
 
 ## random value
 (b <- sample(5))
@@ -139,6 +144,8 @@ table(dat0)                ## ...and data not recognised as separate vectors...
    typeof(dat0)            ## it's type of element of an atomic vector
    is.atomic(dat0)
    is.list(dat0)
+   attributes(dat0)
+   class(dat0)             ##
 
 (dat <- data.frame(dd,ll,pp))
 (tt <- table(dat))             ## BEAUTY !!!
@@ -150,6 +157,21 @@ table(dat0)                ## ...and data not recognised as separate vectors...
    typeof(dat)    ##!!! list !!!
    is.atomic(dat)
    is.list(dat)
+   attributes(dat)
+   class(dat)
+   
+## `class` is something similar to `type` of an object.
+## It is one of the attributes of the object and it may be easily redefined by the user.
+## If there is no `class` attribue then 
+##   class(object) == typeof(object)
+class(dd)
+## On the other hand there is limited and only several number of types which are not managable by the user:
+## one cannot change the object's type.
+## The type of the atomic vector is the type of its elements:
+typeof(dd)  
+## while the type of the list is always "list"
+typeof(dat)
+## This the `class` is in some sense the extension of the notion of the `type`.
 
 ###############################################################################—•°
 ## 2.2. Vector with dimensions
@@ -163,6 +185,8 @@ table(dat0)                ## ...and data not recognised as separate vectors...
 
    is.atomic(m1)
    is.list(m1)
+   attributes(m1)     # only `dim`
+   is.vector(m1)      # FALSE
 
 (m2 <- matrix(1:12,nrow=3,byrow=T))
 
@@ -386,6 +410,7 @@ summary(df1)
 
 seq(1,10,2)
 
+d <- letters[1:5]
 d
 seq_along(d)
 1:length(d)
@@ -458,7 +483,11 @@ as.numeric(lg)
 as.logical(c(1,0,0,1,1))
 
 b
-dd
+b[c(T, F, F, F, F, F, F)]
+b[c(F, T, F, F, F, F, F)]
+b[c(T, T, F, F, F, F, F)]
+b[c(T, F, T, F, F, F, F)]
+b[c(T, T, F, T, F, T, T)]
 
 b == 5
 b[b==5]
@@ -470,8 +499,8 @@ b[b<4]
 
 b!=5
 b[b!=5]
-!b==5   ## double =
-!b=5    ## ERROR
+!b==5   ## fot comparisons we use double `=` 
+!b=5    ## ERROR! sigle `=` means substitution (synonym for `<-`) and you cannot negate substitution 
 
 dd
 table(dd)
@@ -486,9 +515,15 @@ c(T,T,F,F) + c(T,F,T,F)    ## !
 (c(T,T,F,F) + c(T,F,T,F)) > 0
 
 c(T,T,F,F) && c(T,F,T,F)    ## AND collapsed to one value (what walue?)
-c(F,F,T,T) && c(F,T,F,T)
-c(T,T,F,F) || c(T,F,T,F)    ## OR  collapsed to one value (what walue?)
+c(T,T,F,F) && c(F,F,T,F)    ## looks like only first elements matter
+c(F,T,F,F) && c(T,F,T,F)
+c(F,F,T,T) && c(F,T,F,T)   
+c(T,F,T,T) && c(T,T,F,T)
 
+c(T,T,F,F) || c(T,F,T,F)    ## OR  collapsed to one value (what walue?)
+c(T,T,F,F) || c(F,F,T,F)
+c(F,T,F,F) || c(T,F,T,F)
+c(F,T,F,F) || c(F,F,T,F)    ## again, looks like only first elements matter
 
 
 ###########################################################—•°
@@ -580,8 +615,8 @@ length(l2)
 ##!!! BUT
 (l3 <- list(l0,l1))
 length(l3)
-   str(l3)
-
+   str(l3)     ## a list of two lists!
+   
 ##!!!  READ IT ALL VERY CAREFULLY !!!
 
 ## combining list with vector
@@ -598,6 +633,11 @@ list(I(l0),list(1:2))  ## l0 and list(1:2) are the two elements of a list
 list(l0,1:2)            ## l0 and  1:2        are the two elements of a list
 list(I(l0),list(1:2))   ## l0 and  list(1:2)  are the two elements of a list
 
+
+list(I(l0),list(1:2))[1] 
+list(l0,list(1:2))[1] 
+list(I(l0),list(1:2))[[1]] 
+list(l0,list(1:2))[[1]] 
 
 #######################################—•°
 ## list() may be used to grow trees
@@ -671,22 +711,22 @@ sd(replicate(10,mean(sample(0:1,1000,replace=TRUE))))
 
 ## still to much repetition
 for(k in 1:4){
-   sd(replicate(10,mean(sample(0:1,10^k,replace=TRUE))))
+   sd(replicate(10, mean(sample(0:1, 10^k, replace=TRUE))))
 }
 ## Where's result???
 
 ## use print()
 for(k in 1:4){
-   print(sd(replicate(10,mean(sample(0:1,10^k,replace=TRUE)))))
+   print(sd(replicate(10, mean(sample(0:1, 10^k, replace=TRUE)))))
 }
 
 ## it's better to remember result
 (result <- numeric(0))
 for(k in 1:4){
-   result[k]<-sd(replicate(10,mean(sample(0:1,10^k,replace=TRUE))))
+   result[k]<-sd( replicate( 10, mean( sample(0:1, 10^k, replace=TRUE) ) ) )
 }
 result
-plot(result,xlab="power of 10 for sample size",ylab="standard deviation of the sample mean")
+plot(result, xlab="power of 10 for sample size", ylab="standard deviation of the sample mean")
 
 #######################################—•°
 ## Conclusion: the bigger sample the less variation of the (sample) mean.
@@ -708,35 +748,35 @@ for(k in 1:K){
    result[k]<-sd(replicate(nrpl,mean(sample(set,10^k,replace=TRUE))))
 }
 result
-   plot(result,xlab="power of 10 for sample size",ylab="standard deviation of the sample mean")
+   plot(result, xlab="power of 10 for sample size", ylab="standard deviation of the sample mean")
 
    ####################################—•°
    ## plot() by default shows only points
    ## type = 'p' — points (default option)
-   plot(result,type='p', xlab="power of 10 for sample size",ylab="standard deviation of the sample mean")
+   plot(result, type='p', xlab="power of 10 for sample size", ylab="standard deviation of the sample mean")
 
    ## type = 'l' — lines
-   plot(result,type='l', xlab="power of 10 for sample size",ylab="standard deviation of the sample mean")
+   plot(result, type='l', xlab="power of 10 for sample size", ylab="standard deviation of the sample mean")
 
    ## type = 'b' — both
-   plot(result,type='b', xlab="power of 10 for sample size",ylab="standard deviation of the sample mean")
+   plot(result, type='b', xlab="power of 10 for sample size", ylab="standard deviation of the sample mean")
    ####################################—•°
 
 #######################################—•°
 ## But the best (most flexible) solution is to encode the experiment into the function.
 ## This is what we mean by "programming"!
 
-experiment <-  function(nrpl,K,base=10,set=0:1){## beginning of a functions body
+experiment <-  function(nrpl, K, base=10, set=0:1){ ## beginning of a functions body
    ## everything between {} is called "function's body"
    ## this is a set of commands which will be executed every time the function is called
 
    (result <- numeric(0))
    for(k in 1:K){
-      result[k]<-sd(replicate(nrp,mean(sample(set,base^k,replace=TRUE))))
+      result[k]<-sd(replicate(nrpl, mean(sample(set, base^k, replace=TRUE))))
    }
-   plot(result,type='b', xlab=paste0("power of ",base," for sample size")
-                       , ylab="standard deviation of the sample mean")
-   title(paste0("sd for the sample mean from the set {",paste(set,collapse=", "),"}"))  ##!!!
+   plot(result, type='b', xlab=paste0("power of ", base, " for sample size")
+                        , ylab="standard deviation of the sample mean")
+   title(paste0("sd for the sample mean from the set {" , paste(set, collapse=", ") , "}"))  ##!!!
    result   ##!!! in R functions return the last line of the body  (if there is no return(result) earlier)  !!!
 
 }## end of a function body
@@ -767,7 +807,7 @@ experiment(10,6,5,-1:1)  ## changing the set from which we sample
 
 ## AND THEN...
 ##
-## ...do it in Excel :)
+## ...do it in Excel :D
 
 ls()
 ls.str()     ## wow!

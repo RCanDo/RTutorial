@@ -30,12 +30,12 @@ b
 ## i.e. <- and = are the operators of assignment.
 ## It is recommended to use <- rather then = at least within functions you will share with other users.
 ## It is beacause = is also used to set values of functions parameters when you call them, e.g.
-sample(7,4,replace=TRUE)
+sample(7, 4, replace=TRUE)
 ##
 ## Notice that the following
-plot(1:10,sample(5,10,replace=TRUE),type="b")
+plot(1:10, sample(5, 10, replace=TRUE), type="b")
 ## is the same as
-plot(x=1:10,y=sample(5,10,replace=TRUE),type="b")
+plot(x=1:10, y=sample(5, 10, replace=TRUE), type="b")
 ## Does x and y exist in the environment?
 x
 y
@@ -43,14 +43,15 @@ y
    exists("x")
    exists("y")
    ## this way you don't get error when object doesn't exists and you can use it
-   ## in conditional statments like if...else... or switch().
+   ## in conditional statments like `if...else...` or switch().
 
 ## Compare with:
 plot(x<-1:10,y<-sample(5,10,replace=TRUE),type="b")
 ## what is exactly the same as the previous plot but now
 x
 y
-## we've created two vectors "on the fly" i.e. while executing some function (but not as a result of this function).
+## We've created two vectors "on the fly" i.e. while executing some function but not as a result of this function
+## (such objects are called "side-effects" of a function).
 ## So <- and = are not identical in meaning. Although it's hard to find other differences this one is crucial.
 
 #######################################—•°
@@ -58,6 +59,30 @@ y
 ##   assign("name",value)
 ## See the ch. 2. below in this file.
 #######################################—•°
+
+
+#######################################—•°
+## By the way:
+## In general "side-effect" of a function is any change in the environment caused by this function 
+## except the values the function directly returns (according to this function definition).
+## Functions with side-effects are ubiquituous despite the fact that they are considered by programmers
+## as a bad thing or at best as a necessary evil.
+## This is because they change the state of the environment "under the cover", very often without any notice.
+## It may cause lots of trouble and headache while debugging programms.
+##
+## There is a programming paradigm, called "functional programming", in which side-effects are forbidden,
+## however it is very difficult to keep to this paradigm.
+## In functional programming everything is a function without side-effects. 
+## "Function" means that it always returns something, and is "stateless", 
+## i.e. always returns the same value for the same input
+## (has no internal "state" or rather this "state" is always the same). 
+##
+## Interestingly R is in its core a functional language!
+## However R comprises also procedural and object oriented paradigms (is a multiparadigm language)
+## and using its functional properties are quite difficult.
+## Nevetheless if you reach these abilities then your programms will perform much better and become very powerfull.
+#######################################—•°
+
 
 ###############################################################################—•°
 ## 1.2. Adding, removing and changing values of vectors.
@@ -89,6 +114,7 @@ a
 
 ## Notice that if there is not enough values passed to fill the indicated space then
 a[7:15] <- 7:10
+a
 ## THE RULE OF RECYCLILNG WORKS.
 
 ## You can always delete some values by NA
@@ -180,7 +206,6 @@ a
 ## KEEP CONTROL OF WHAT'S GOING ON! Especially when indexing and assigning.
 
 
-
 #######################################—•°
 ## How it works for vectors with dimensions i.e. arrays/matrices/tables ?
 ##
@@ -238,6 +263,7 @@ ll        ## ????
 ll["sixth"] <- NULL
 ll
 
+
 ## Remember that data.fame is a list!
 ## Hence using [] we attempted to add/replace one container (6th) with 3 (length(datfram)).
 ## But we wanted to put the whole data frame into one container (train of 3 wagons into one wagon),
@@ -245,6 +271,8 @@ ll
 ll[["sixth"]] <- datfram
 ll
 ## Now it's OK! You must use [[]] in such situations.
+
+ll0 = ll   ## copy for later use
 
 ll["sixth"] <- NULL
 ll
@@ -279,7 +307,11 @@ ll
 ll[1:2] <- NULL
 ll
 
-## At the end we have a data frame but within a container.
+#######################################—•°
+
+ll = ll0['sixth']
+ll
+## We have a data frame but within a container.
 ## Get rid of it:
 unlist(ll)    ## ooops...
 ## unlist() destroys the whole structure — not only outer list (typeof(ll)) but also inner list (typof(datfram)).
@@ -442,12 +474,12 @@ ls.str(pos="package:datasets")   ## our function is little prettier as it separa
 ## under their names.
 
 ## 1.2.1
-variables_from_df <- function(datfram,pos=1){
-   for(nam in names(iris)){
-      assign(nam,iris[[nam]],pos=pos)
+variables_from_df <- function(datfram, pos=1){
+   for(nam in names(datfram)){
+      assign(nam, datfram[[nam]], pos=pos)
    }
    message("The following variables were returned to environment (pos=",pos,
-   "):\n",paste(names(iris),collapse=", "),"\n",sep="")
+   "):\n",paste(names(datfram), collapse=", "), "\n", sep="")
 }
 
 summary(iris) ; head(iris)  ## 'iris' data resides in "package:datasets"
@@ -457,6 +489,13 @@ Sepal.Length
 Sepal.Width
 Species
 ls_str()
+
+#######################################—•°
+## By the way:
+## Notice that this function does not return anything and makes only side-effects!
+## (creates some variables in the environment).
+## This is very evil function from the functional point of view...
+#######################################—•°
 
 #######################################—•°
 ## Could you write this function without assign()?
@@ -471,21 +510,21 @@ variables_from_df(iris)
 ## Let's do something interactive
 
 ## 1.2.2
-variables_from_df <- function(datfram,pos=1){
+variables_from_df <- function(datfram, pos=1){
    returned <- character(0)
-   for(nam in names(iris)){
-      if(exists(nam,where=pos)){       ## in exists() there is 'where' option which means the same as 'pos'
-         rl <- readline(prompt=paste0(nam," already exists. Overwrite it? [0/1]: "))  ## always character
+   for(nam in names(datfram)){
+      if(exists(nam, where=pos)){       ## in exists() there is 'where' option which means the same as 'pos'
+         rl <- readline(prompt=paste0(nam, " already exists. Overwrite it? [0/1]: "))  ## always character
          # print(rl)
          # print(as.numeric(rl))    ## you may uncomment it to see what rl is
          if( as.numeric(rl) ){      ## remember that 0 is interpreted as FALSE while 1 as TRUE
                                     ## CHECK how other numbers are interpreted by  as.logical(number)
-            assign(nam,iris[[nam]],pos=pos)
-            returned <- c(returned,nam)
+            assign(nam, datfram[[nam]], pos=pos)
+            returned <- c(returned, nam)
          }
       }else{
-         assign(nam,iris[[nam]],pos=pos)
-         returned <- c(returned,nam)
+         assign(nam, datfram[[nam]], pos=pos)
+         returned <- c(returned, nam)
       }
    }
    message("The following variables were returned to environment (pos=",pos,
@@ -497,28 +536,28 @@ variables_from_df(iris)
 ## Correct it using another loop called repeat{ }
 
 ## 1.2.3
-variables_from_df <- function(datfram,pos=1){
+variables_from_df <- function(datfram, pos=1){
    returned <- character(0)
-   for(nam in names(iris)){
-      if(exists(nam,where=pos)){       ## in exists() there is 'where' option which means the same as 'pos'
+   for(nam in names(datfram)){
+      if(exists(nam, where=pos)){       ## in exists() there is 'where' option which means the same as 'pos'
          rl <- ""
-         while( ! rl %in% c("0","1") ){
+         while( ! rl %in% c("0", "1") ){
             rl <- readline(prompt=paste0(nam," already exists. Overwrite it? [0/1]: ")) ## always character
             ##  WHY  as.numeric( readline(prompt=paste0(nam," already exists. Overwrite it? [0/1]: ")) )
-            ##  IS NOT A GOOD IDEA ??? (thus we postponed changing type of to if() )
+            ##  IS NOT A GOOD IDEA ??? (thus we postponed changing type of it to if() )
             ##  This is really important question!
          }
          if( as.numeric(rl) ){
-            assign(nam,iris[[nam]],pos=pos)
-            returned <- c(returned,nam)
+            assign(nam, datfram[[nam]], pos=pos)
+            returned <- c(returned, nam)
          }
       }else{
-         assign(nam,iris[[nam]],pos=pos)
-         returned <- c(returned,nam)
+         assign(nam,datfram[[nam]], pos=pos)
+         returned <- c(returned, nam)
       }
    }
-   message("The following variables were returned to environment (pos=",pos,
-   "):\n",paste(returned,collapse=", "),"\n",sep="")
+   message("The following variables were returned to environment (pos=", pos,
+   "):\n", paste(returned, collapse=", "), "\n", sep="")
 }
 
 variables_from_df(iris)   ## It's OK!!!
@@ -530,7 +569,7 @@ variables_from_df(iris)   ## It's OK!!!
    "d" %in% setB
    0 %in% setB
    TRUE %in% setB
-   (function(x){x^2}) %in% setB  ## ERROR... This not so simple with functions,
+   (function(x){x^2}) %in% setB  ## ERROR... This is not so simple with functions,
                                  ## but it's also rather peculiar statement to check...
 
    ## for setA having more elements we have each element checked if it is in setB
@@ -556,11 +595,11 @@ variables_from_df(iris)   ## It's OK!!!
 ## what doesn't look well, not to say: that's ugly and bad programming practice.
 
 ## 1.2.4
-variables_from_df <- function(datfram,pos=1){
+variables_from_df <- function(datfram, pos=1){
    returned <- character(0)
-   for(nam in names(iris)){
+   for(nam in names(datfram)){
       doit <- TRUE
-      if(exists(nam,where=pos)){       ## in exists() there is 'where' option which means the same as 'pos'
+      if(exists(nam, where=pos)){       ## in exists() there is 'where' option which means the same as 'pos'
          rl <- ""
          while( ! rl %in% c("0","1") ){
             rl <- readline(prompt=paste0(nam," already exists. Overwrite it? [0/1]: ")) ## always character
@@ -568,8 +607,8 @@ variables_from_df <- function(datfram,pos=1){
          doit <- as.logical(as.numeric(rl))
       }
       if(doit){
-         assign(nam,iris[[nam]],pos=pos)
-         returned <- c(returned,nam)
+         assign(nam, datfram[[nam]], pos=pos)
+         returned <- c(returned, nam)
       }
    }
    message("The following variables were returned to environment (pos=",pos,
@@ -582,11 +621,11 @@ variables_from_df(iris)   ## It's OK!!!
 
 
 ## Now we may wish to remove all variable from environment having the same name as variables of the given data frame:
-rm_variables_from_df <- function(datfram,pos=1){
-   common <- intersect(ls(pos=1),names(datfram))  ## intersect(setA,setB) reurnes common elements of both sets (vectors)
-   rm(list=common,pos=pos)
-   cat("The following variables where removed from environment (pos=",pos,
-   "):\n",paste(common,collapse=", "),"\n")
+rm_variables_from_df <- function(datfram, pos=1){
+   common <- intersect(ls(pos=1), names(datfram))  ## intersect(setA,setB) reurnes common elements of both sets (vectors)
+   rm(list=common, pos=pos)
+   cat("The following variables where removed from environment (pos=", pos,
+   "):\n", paste(common,collapse=", "),"\n")
 }
 
 rm_variables_from_df(iris)
@@ -602,6 +641,3 @@ ls_str()
 save.image()
 
 ###################################################################################################—•°
-
-
-source("")
